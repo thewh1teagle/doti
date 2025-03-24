@@ -1,5 +1,11 @@
 """
 Hebrew diacritics encoding and decoding
+
+Deduplicate diacritics (phonetically)
+Normalize
+Remove unnecessary dagesh
+Sort dagesh
+Convert to IDs back and forth
 """
 
 import unicodedata

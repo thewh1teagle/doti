@@ -1,20 +1,29 @@
 import torch.nn as nn
 from doti.tokenizer import LETTER_TO_ID, NIQQUD_TO_ID
 
+config = {
+    "embedding_dim": 32,
+    "hidden_dim": 64,
+    "vocab_size": len(LETTER_TO_ID),
+    "niqqud_classes": len(NIQQUD_TO_ID),
+    "dagesh_classes": 2, # OFF, ON
+    "shin_classes": 3 # OFF, SHIN, SIN
+}
+
 # Hyperparameters
 EMBEDDING_DIM = 32
 HIDDEN_DIM = 64
 
 class DotiModel(nn.Module):
-    def __init__(self, vocab_size, hidden_dim, niqqud_classes, dagesh_classes=2, shin_classes=3):
+    def __init__(self, config):
         super(DotiModel, self).__init__()
-        self.embedding = nn.Embedding(vocab_size, EMBEDDING_DIM)
-        self.lstm = nn.LSTM(EMBEDDING_DIM, hidden_dim, batch_first=True)
+        self.embedding = nn.Embedding(config["vocab_size"], config["embedding_dim"])
+        self.lstm = nn.LSTM(config["embedding_dim"], config["hidden_dim"], batch_first=True)
 
         # 3 output heads
-        self.fc_niqqud = nn.Linear(hidden_dim, niqqud_classes)
-        self.fc_dagesh = nn.Linear(hidden_dim, dagesh_classes)
-        self.fc_shin = nn.Linear(hidden_dim, shin_classes)
+        self.fc_niqqud = nn.Linear(config["hidden_dim"], config["niqqud_classes"])
+        self.fc_dagesh = nn.Linear(config["hidden_dim"], config["dagesh_classes"])
+        self.fc_shin = nn.Linear(config["hidden_dim"], config["shin_classes"])
 
     def forward(self, x):
         x = self.embedding(x)
@@ -27,8 +36,4 @@ class DotiModel(nn.Module):
         return niqqud_out, dagesh_out, shin_out
 
 def build_model():
-    return DotiModel(
-        vocab_size=len(LETTER_TO_ID),
-        hidden_dim=HIDDEN_DIM,
-        niqqud_classes=len(NIQQUD_TO_ID)
-    )
+    return DotiModel(config)
