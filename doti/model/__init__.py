@@ -18,17 +18,25 @@ class DotiModel(nn.Module):
     def __init__(self, config):
         super(DotiModel, self).__init__()
         self.embedding = nn.Embedding(config["vocab_size"], config["embedding_dim"])
-        self.lstm = nn.LSTM(config["embedding_dim"], config["hidden_dim"], batch_first=True, bidirectional=True)
 
+        # Bidirectional LSTM
+        self.lstm = nn.LSTM(
+            config["embedding_dim"],
+            config["hidden_dim"],
+            batch_first=True,
+            bidirectional=True
+        )
 
-        # 3 output heads
-        self.fc_niqqud = nn.Linear(config["hidden_dim"], config["niqqud_classes"])
-        self.fc_dagesh = nn.Linear(config["hidden_dim"], config["dagesh_classes"])
-        self.fc_shin = nn.Linear(config["hidden_dim"], config["shin_classes"])
+        # Multiply hidden_dim by 2 for bidirectional output
+        bidir_hidden = config["hidden_dim"] * 2
+
+        self.fc_niqqud = nn.Linear(bidir_hidden, config["niqqud_classes"])
+        self.fc_dagesh = nn.Linear(bidir_hidden, config["dagesh_classes"])
+        self.fc_shin = nn.Linear(bidir_hidden, config["shin_classes"])
 
     def forward(self, x):
         x = self.embedding(x)
-        out, _ = self.lstm(x)
+        out, _ = self.lstm(x)  # shape: (batch, seq_len, hidden_dim * 2)
 
         niqqud_out = self.fc_niqqud(out)
         dagesh_out = self.fc_dagesh(out)
