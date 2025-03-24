@@ -6,7 +6,8 @@ import torch
 class Doti:
     def __init__(self, model_path: str):
         self.model = build_model()
-        # Load model weights
-        self.model.load_state_dict(torch.load(model_path))        
+        checkpoint = torch.load(model_path)
+        self.model.load_state_dict(checkpoint['model_state_dict'])
+    
     def compute(self, text: str) -> str:
         return predict(self.model, text)
