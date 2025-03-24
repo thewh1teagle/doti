@@ -12,3 +12,4 @@ wheels/
 # General
 *.pth
 ckpt/
+*.onnx

@@ -7,9 +7,7 @@ authors = [
     { name = "thewh1teagle", email = "61390950+thewh1teagle@users.noreply.github.com" }
 ]
 requires-python = ">=3.11"
-dependencies = [
-    "numpy>=2.2.4",
-]
+dependencies = []
 
 [build-system]
 requires = ["hatchling"]
@@ -17,3 +15,7 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["doti"]
+
+[project.optional-dependencies]
+train = ["torch>=2.6.0", "numpy>=2.2.4"]
+onnx = ["onnx>=1.17.0", "onnxruntime>=1.21.0"]
