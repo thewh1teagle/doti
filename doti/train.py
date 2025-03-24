@@ -10,6 +10,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}")
 
 # Hyperparameters
+PRE_TRAINING_EPOCH = 0
 EPOCHS = 10000  # Use a smaller value (e.g., 100) for testing purposes
 LEARNING_RATE = 0.01
 
@@ -61,22 +62,28 @@ def train(sentences: list):
     optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
     criterion = nn.CrossEntropyLoss()
 
-    for epoch in range(EPOCHS):
-        model.train()
-        optimizer.zero_grad()
+    try:
+        for epoch in range(EPOCHS):
+            model.train()
+            optimizer.zero_grad()
 
-        niqqud_out, dagesh_out, shin_out = model(X)
+            niqqud_out, dagesh_out, shin_out = model(X)
 
-        loss_niqqud = criterion(niqqud_out.view(-1, niqqud_out.shape[-1]), y_niqqud.view(-1))
-        loss_dagesh = criterion(dagesh_out.view(-1, dagesh_out.shape[-1]), y_dagesh.view(-1))
-        loss_shin = criterion(shin_out.view(-1, shin_out.shape[-1]), y_shin.view(-1))
+            loss_niqqud = criterion(niqqud_out.view(-1, niqqud_out.shape[-1]), y_niqqud.view(-1))
+            loss_dagesh = criterion(dagesh_out.view(-1, dagesh_out.shape[-1]), y_dagesh.view(-1))
+            loss_shin = criterion(shin_out.view(-1, shin_out.shape[-1]), y_shin.view(-1))
 
-        loss = loss_niqqud + loss_dagesh + loss_shin
-        loss.backward()
-        optimizer.step()
+            loss = loss_niqqud + loss_dagesh + loss_shin
+            loss.backward()
+            optimizer.step()
 
-        if epoch % 10 == 0 or epoch == EPOCHS - 1:
-            print(f"Epoch {epoch+1}/{EPOCHS}, Loss: {loss.item():.4f}")
+            if epoch % 10 == 0 or epoch == EPOCHS - 1:
+                print(f"Epoch {epoch+1}/{EPOCHS}, Loss: {loss.item():.4f}")
+    except KeyboardInterrupt:
+        print("\nTraining interrupted. Saving model...")
+        torch.save(model.state_dict(), "model_interrupt.pth")
+        print("Model saved as model_interrupt.pth")
+        return model  # You can optionally return early
 
     return model
 
