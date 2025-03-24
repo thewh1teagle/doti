@@ -1,3 +1,7 @@
+"""
+pip install '.[torch]'
+"""
+
 from doti import Doti
 from doti.dataset import load_dataset
 from doti.tokenizer import remove_niqqud

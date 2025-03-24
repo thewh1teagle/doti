@@ -1,3 +1,6 @@
+"""
+pip install '.[onnx]'
+"""
 import onnxruntime
 from doti.predict_onnx import predict_onnx
 

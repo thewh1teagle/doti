@@ -17,5 +17,5 @@ build-backend = "hatchling.build"
 packages = ["doti"]
 
 [project.optional-dependencies]
-train = ["torch>=2.6.0", "numpy>=2.2.4"]
+torch = ["torch>=2.6.0", "numpy>=2.2.4"]
 onnx = ["onnx>=1.17.0", "onnxruntime>=1.21.0"]
