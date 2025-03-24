@@ -72,7 +72,9 @@ def remove_niqqud(text):
     return re.sub(r"[\u05B0-\u05C7]", "", text)
 
 def sort_dagesh(text):
-    # Alphabet followed by 1/2 symbols then dagesh. make dagesh first
+    """
+    Alphabet followed by 1/2 symbols then dagesh. make dagesh first
+    """
     return re.sub("([\u05d0-\u05ea])([\u05b0-\u05c7]{1,2})(\u05bc)", r"\1\3\2", text)
 
 def normalize(text):
@@ -178,6 +180,13 @@ def encode_sentence(text):
 
 
 def decode_sentence(encoded):
+    """
+    Decodes an encoded Hebrew sentence back into diacritized text.
+
+    Each item: [char_id, niqqud_id, dagesh_flag, shin_flag]
+    - If char_id == -1: preserves non-Hebrew char (uses niqqud_id as Unicode).
+    - Otherwise: rebuilds Hebrew letter with optional marks.
+    """
     result = []
     for char_id, niqqud_id, dagesh_flag, shin_flag in encoded:
         if char_id == -1:
