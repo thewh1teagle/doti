@@ -18,7 +18,8 @@ class DotiModel(nn.Module):
     def __init__(self, config):
         super(DotiModel, self).__init__()
         self.embedding = nn.Embedding(config["vocab_size"], config["embedding_dim"])
-        self.lstm = nn.LSTM(config["embedding_dim"], config["hidden_dim"], batch_first=True)
+        self.lstm = nn.LSTM(config["embedding_dim"], config["hidden_dim"], batch_first=True, bidirectional=True)
+
 
         # 3 output heads
         self.fc_niqqud = nn.Linear(config["hidden_dim"], config["niqqud_classes"])
