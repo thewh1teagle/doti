@@ -3,12 +3,12 @@ pip install '.[torch]'
 """
 
 from doti import Doti
-from doti.tokenizer import remove_niqqud, normalize
-from doti.dataset import load_dataset
+from doti.model.tokenizer import remove_niqqud, normalize
+from doti.train.dataset import load_dataset
 
 if __name__ == "__main__":
     sentences = load_dataset()
-    model = Doti("model.pth")
+    model = Doti("ckpt/checkpoint_20764.pth")
     for with_niqqud in sentences:
         with_niqqud = normalize(with_niqqud)
         without_niqqud = remove_niqqud(with_niqqud)

@@ -1,4 +1,4 @@
-from doti.predict import predict
+from doti.model.predict import predict
 from doti.model import build_model
 
 import torch

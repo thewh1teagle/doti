@@ -1,6 +1,6 @@
 import numpy as np
 import onnxruntime as ort
-from .tokenizer import encode_sentence, decode_sentence, remove_niqqud, ID_TO_LETTER, LETTER_TO_ID, ID_TO_NIQQUD, NIQQUD_TO_ID
+from doti.model.tokenizer import encode_sentence, decode_sentence, remove_niqqud
 
 
 def predict_onnx(session: ort.InferenceSession, text):

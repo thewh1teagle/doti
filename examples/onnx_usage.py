@@ -2,7 +2,7 @@
 pip install '.[onnx]'
 """
 import onnxruntime
-from doti.predict_onnx import predict_onnx
+from doti.onnx.predict import predict_onnx
 
 session = onnxruntime.InferenceSession('model.onnx')
 sentence = "שלום עולם"

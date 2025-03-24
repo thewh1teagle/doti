@@ -3,8 +3,8 @@ pip install '.[torch]'
 """
 
 from doti import Doti
-from doti.dataset import load_dataset
-from doti.tokenizer import remove_niqqud
+from doti.train.dataset import load_dataset
+from doti.model.tokenizer import remove_niqqud
 
 if __name__ == "__main__":
     sentences = load_dataset()

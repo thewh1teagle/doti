@@ -1,5 +1,5 @@
 import torch.nn as nn
-from doti.tokenizer import LETTER_TO_ID, NIQQUD_TO_ID
+from doti.model.tokenizer import LETTER_TO_ID, NIQQUD_TO_ID
 
 config = {
     "embedding_dim": 32,

@@ -6,8 +6,8 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from model import build_model
-from tokenizer import encode_sentence, remove_niqqud
-from dataset import load_dataset, train_test_split
+from doti.model.tokenizer import encode_sentence, remove_niqqud
+from doti.train.dataset import load_dataset, train_test_split
 
 # Device configuration
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
