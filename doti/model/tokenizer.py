@@ -56,9 +56,7 @@ DAGESH_FLAG_OFF = 0
 DAGESH_FLAG_ON = 1
 
 # Special tokens
-SPACE_TOKEN = -1
-UNKNOWN_TOKEN = -2
-PRESERVE_UKNOWN_TOKEN = -3  # Non-Hebrew but valid characters
+PRESERVE_UKNOWN_TOKEN = -1  # Non-Hebrew but valid characters
 
 # Hebrew letters and diacritics IDs
 HEBREW_LETTERS = "אבגדהוזחטיכלמנסעפצקרשתךםןףץ"
@@ -134,8 +132,6 @@ def encode_sentence(text):
         [char_id, niqqud_id, dagesh_flag, shin_flag],
         [char_id, niqqud_id, dagesh_flag, shin_flag],
         [PRESERVE_UKNOWN_TOKEN, ord(char), 0, 0],
-        [-1, 0, 0, 0], # Space
-        [-2, 0, 0, 0], # Unknown
         ...
     ]
     """
@@ -145,12 +141,6 @@ def encode_sentence(text):
     i = 0
     while i < len(text):
         char = text[i]
-        
-        # Handle space
-        if char == " ":
-            encoded.append([SPACE_TOKEN, 0, 0, 0])  # SPACE_TOKEN
-            i += 1
-            continue
 
         # Skip punctuation, digits, Latin, etc.
         if unicodedata.category(char) != 'Lo':  # Not a Hebrew letter
@@ -191,12 +181,6 @@ def decode_sentence(encoded):
     result = []
     for char_id, niqqud_id, dagesh_flag, shin_flag in encoded:
         if char_id == -1:
-            result.append(" ")  # SPACE_TOKEN
-            continue
-        elif char_id == -2:
-            result.append("❓")  # UNKNOWN_TOKEN
-            continue
-        elif char_id == -3:
             result.append(chr(niqqud_id))  # SPECIAL_CHAR_TOKEN
             continue
 
@@ -204,12 +188,12 @@ def decode_sentence(encoded):
         marks = []
 
         if dagesh_flag:
-            marks.append("\u05bc")
+            marks.append("\u05bc") # Dagesh
         niqqud = ID_TO_NIQQUD.get(niqqud_id, None)
         if niqqud:
             marks.append(niqqud)
         if can_shin_sin(base_char) and shin_flag:
-            marks.append("\u05c1" if shin_flag == 1 else "\u05c2")
+            marks.append("\u05c1" if shin_flag == 1 else "\u05c2") # Shin/Sin
 
         result.append(base_char + ''.join(marks))
     return ''.join(result)
