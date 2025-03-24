@@ -2,9 +2,10 @@
 pip install '.[onnx]'
 """
 import onnxruntime
-from doti.onnx.predict import predict_onnx
+from doti import DotiOnnx
 
 session = onnxruntime.InferenceSession('model.onnx')
+doti = DotiOnnx(session)
 sentence = "שלום עולם"
-result = predict_onnx(session, sentence)
+result = doti.compute(sentence)
 print(result)

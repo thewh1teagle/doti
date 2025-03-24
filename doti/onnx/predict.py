@@ -2,8 +2,7 @@ import numpy as np
 import onnxruntime as ort
 from doti.model.tokenizer import encode_sentence, decode_sentence, remove_niqqud
 
-
-def predict_onnx(session: ort.InferenceSession, text):
+def predict(session: ort.InferenceSession, text):
     # Preprocess input
     stripped = encode_sentence(remove_niqqud(text))
     X = [tok[0] for tok in stripped if tok[0] >= 0]

@@ -5,7 +5,7 @@ from pathlib import Path
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from model import build_model
+from doti.model import build_model
 from doti.model.tokenizer import encode_sentence, remove_niqqud
 from doti.train.dataset import load_dataset, train_test_split
 
@@ -14,8 +14,8 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}")
 
 # Hyperparameters
-PRE_TRAIN_EPOCH = 20
-EPOCHS = 50000  # You can reduce this for testing
+PRE_TRAIN_EPOCH = 0
+EPOCHS = 1000  # You can reduce this for testing
 SAVE_INTERVAL = 1000
 LOG_INTERVAL = 10
 LEARNING_RATE = 0.01

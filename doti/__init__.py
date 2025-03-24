@@ -1,7 +1,14 @@
 from doti.model.predict import predict
 from doti.model import build_model
-
 import torch
+
+class DotiOnnx:
+    def __init__(self, session):
+        self.session = session
+    
+    def compute(self, text):
+        from doti.onnx.predict import predict
+        return predict(self.session, text)
 
 class Doti:
     def __init__(self, model_path: str):
