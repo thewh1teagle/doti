@@ -1,3 +1,4 @@
+from pathlib import Path
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -10,10 +11,13 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}")
 
 # Hyperparameters
-PRE_TRAINING_EPOCH = 0
-EPOCHS = 10000  # Use a smaller value (e.g., 100) for testing purposes
+PRE_TRAIN_EPOCH = 20
+EPOCHS = 50000  # You can reduce this for testing
+SAVE_INTERVAL = 1000
+LOG_INTERVAL = 10
 LEARNING_RATE = 0.01
-
+MODEL_PATH = 'ckpt/checkpoint_{epoch}.pth'
+Path(MODEL_PATH).parent.mkdir(exist_ok=True)
 
 def prepare_data(sentences):
     X_batch, y_niqqud, y_dagesh, y_shin = [], [], [], []
@@ -55,15 +59,27 @@ def prepare_data(sentences):
     )
 
 
-def train(sentences: list):
+def train(sentences: list, pre_train_epoch = 0):
     X, y_niqqud, y_dagesh, y_shin = prepare_data(sentences)
 
     model = build_model().to(device)
     optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
     criterion = nn.CrossEntropyLoss()
 
+    model_path = MODEL_PATH.format(epoch=pre_train_epoch)
+    epoch = pre_train_epoch
+
+    if epoch:
+        assert Path(model_path).exists(), f'{model_path} not exists. cannot resume'
+        checkpoint = torch.load(model_path, map_location=device)
+        model.load_state_dict(checkpoint['model_state_dict'])
+        optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+        pre_train_epoch = checkpoint['epoch'] + 1
+        print(f"Resuming training from epoch {pre_train_epoch}...")
+
     try:
-        for epoch in range(EPOCHS):
+        for epoch in range(pre_train_epoch, EPOCHS + 1):
+            model_path = MODEL_PATH.format(epoch=epoch)
             model.train()
             optimizer.zero_grad()
 
@@ -77,15 +93,33 @@ def train(sentences: list):
             loss.backward()
             optimizer.step()
 
-            if epoch % 10 == 0 or epoch == EPOCHS - 1:
+            if epoch % LOG_INTERVAL == 0 or epoch == EPOCHS - 1:
                 print(f"Epoch {epoch+1}/{EPOCHS}, Loss: {loss.item():.4f}")
-    except KeyboardInterrupt:
-        print("\nTraining interrupted. Saving model...")
-        torch.save(model.state_dict(), "model_interrupt.pth")
-        print("Model saved as model_interrupt.pth")
-        return model  # You can optionally return early
+                if epoch % SAVE_INTERVAL == 0:
+                    torch.save({
+                        'epoch': epoch,
+                        'model_state_dict': model.state_dict(),
+                        'optimizer_state_dict': optimizer.state_dict(),
+                        'loss': loss.item()
+                    }, model_path)
 
-    return model
+    except KeyboardInterrupt:
+        print("\nTraining interrupted. Saving checkpoint...")
+        torch.save({
+            'epoch': epoch,
+            'model_state_dict': model.state_dict(),
+            'optimizer_state_dict': optimizer.state_dict(),
+            'loss': loss.item()
+        }, model_path)
+        print(f"Checkpoint saved as {model_path}")
+        return model, epoch
+    torch.save({
+        'epoch': epoch,
+        'model_state_dict': model.state_dict(),
+        'optimizer_state_dict': optimizer.state_dict(),
+        'loss': loss.item()
+    }, model_path)
+    return model, epoch
 
 
 def evaluate(model, sentences):
@@ -112,7 +146,10 @@ def evaluate(model, sentences):
 if __name__ == "__main__":
     sentences = load_dataset()
     train_data, test_data = train_test_split(sentences)
-    model = train(train_data)
+
+    # Set resume=True to continue from checkpoint
+    model, epoch = train(train_data, pre_train_epoch=PRE_TRAIN_EPOCH)
+    model_path = MODEL_PATH.format(epoch=epoch)
+
     evaluate(model, test_data)
-    torch.save(model.state_dict(), "model.pth")
-    print("Model saved as model.pth")
+    print(f"Model saved as {model_path}")

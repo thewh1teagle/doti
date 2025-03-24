@@ -11,3 +11,4 @@ wheels/
 
 # General
 *.pth
+ckpt/
