@@ -1,7 +1,7 @@
 [project]
-name = "niqqud-model"
+name = "doti"
 version = "0.1.0"
-description = "Add your description here"
+description = "Add diacritics to Hebrew text"
 readme = "README.md"
 authors = [
     { name = "thewh1teagle", email = "61390950+thewh1teagle@users.noreply.github.com" }
