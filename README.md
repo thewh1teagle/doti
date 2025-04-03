@@ -2,6 +2,8 @@
 
 Add diacritics to Hebrew text
 
+Note: it's only POC
+
 
 ```python
 """
